@@ -1,0 +1,189 @@
+<!doctype html>
+<title>{% block title %}Home{% endblock %} | bokbok</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('.static', filename='css/bootstrap.min.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('.static', filename='css/style.css') }}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="{{ url_for('.static', filename='js/application.js') }}"></script>
+<script>
+  function buildGraphiteUrl(targets, options) {
+    var url = 'http://{{ graphite_host }}/render?'
+
+    for (var i = 0; i < targets.length; i++) {
+      url += '&target=' + targets[i]
+    }
+
+    for (var k in options) {
+      if (options.hasOwnProperty(k)) {
+        url += '&' + k + '=' + options[k]
+      }
+    }
+
+    return(url)
+  }
+
+  function updateGraph(graphiteTargets, options) {
+    var opts = $.extend({}, {{ graphite_options|safe }}, options)
+    $('#graphite-img').attr('src',
+      buildGraphiteUrl(graphiteTargets, opts))
+  }
+</script>
+<div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="/">bokbok</a>
+      <ul class="nav">
+	<li class="active">
+	  <a href="/">Home</a>
+	</li>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="span12 columns">
+      <img id="graphite-img" src="http://placehold.it/{{
+      graphite_options['width'] }}x{{ graphite_options['height'] }}/{{
+      graphite_options['bgcolor'] }}/ffffff&text=your+graph+here" />
+    </div>
+  </div>
+  <div class="row">
+    &nbsp;
+  </div>
+  <div class="row">
+    <div class="span12 columns">
+      <form class="form-horizontal" id="graph-form">
+        <div class="well">
+          <a class="btn btn-primary"><i class="icon-refresh
+                                               icon-white"></i>
+            Update graph</a>
+          <button type="reset"
+                  class="btn"><i class="icon-remove"></i>
+            Reset</button>
+        </div>
+        <div class="accordion" id="accordion2">
+          <div class="accordion-group">
+            <div class="accordion-heading">
+              <a class="accordion-toggle" data-toggle="collapse" href="#collapseOne">
+                Metrics
+              </a>
+            </div>
+            <div id="collapseOne" class="accordion-body in collapse">
+              <div class="accordion-inner">
+                <div class="well">
+                  <div class="input-append">
+	            <input type="text" id="metrics-select"
+	                   class="span5" style="margin: 0 auto;"
+	                   data-provide="typeahead"
+                           placeholder="Search for a metric" />
+                    <span class="add-on">
+                      <i class="icon-search" id="search-help"></i>
+                    </span>
+                  </div>
+                  <p class="help-block">Mouse over the magnifying
+                  glass for help</p>
+                </div>
+                <div class="span11">
+                  <ul id="graph-target-list">
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-group">
+            <div class="accordion-heading">
+              <a class="accordion-toggle" data-toggle="collapse" href="#collapseTwo">
+                Options
+              </a>
+            </div>
+            <div id="collapseTwo" class="accordion-body in collapse">
+              <div class="accordion-inner">
+                <fieldset>
+                  <div class="row">
+                    <div class="span6">
+                      <div class="control-group">
+                        <label class="control-label">Title</label>
+                        <div class="controls">
+                          <input class="span2" type="text" name="title"
+                                 placeholder="My graph" />
+                        </div>
+                      </div>
+                      <div class="control-group">
+                        <label class="control-label">From</label>
+                        <div class="controls">
+                          <input class="span1" type="text" name="from"
+                                 value="-1d" />
+                        </div>
+                      </div>
+                      <div class="control-group">
+                        <label class="control-label">Until</label>
+                        <div class="controls">
+                          <input class="span1" type="text" name="until"
+                                 placeholder="now" />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="span5">
+                      <div class="control-group">
+                        <label class="control-label">Vertical title</label>
+                        <div class="controls">
+                          <input class="span2" type="text" name="vtitle"
+                                 placeholder="per second" />
+                        </div>
+                      </div>
+                      <div class="control-group">
+                        <label class="control-label">Line width</label>
+                        <div class="controls">
+                          <input class="span1" type="text" name="lineWidth"
+                                 placeholder="2" />
+                        </div>
+                      </div>
+                      <div class="control-group">
+                        <label class="control-label">Area mode</label>
+                        <div class="controls">
+                          <select class="span2" name="areaMode">
+                            <option selected>none</option>
+                            <option>stacked</option>
+                            <option>first</option>
+                            <option>all</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="span11">
+                      <div class="control-group">
+                        <label class="control-label" for="option-toggles">Toggles</label>
+                        <div class="controls">
+                          <label class="checkbox">
+                            <input type="checkbox" id="hide-grid"
+                                   name="hideGrid" value="true" />
+                            Hide grid
+                          </label>
+                          <label class="checkbox">
+                            <input type="checkbox" id="hide-axes"
+                                   name="hideAxes" value="true" />
+                            Hide axes
+                          </label>
+                          <label class="checkbox">
+                            <input type="checkbox" id="hide-legend"
+                                   name="hideLegend" value="true" />
+                            Hide legend
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script src="{{ url_for('.static', filename='js/bootstrap-collapse.js') }}"></script>
+<script src="{{ url_for('.static', filename='js/bootstrap-typeahead.js') }}"></script>
+<script src="{{ url_for('.static', filename='js/bootstrap-tooltip.js') }}"></script>
+<script src="{{ url_for('.static', filename='js/bootstrap-popover.js') }}"></script>

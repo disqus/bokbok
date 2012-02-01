@@ -1,0 +1,23 @@
+img#graphite-img {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.accordion-heading {
+  background-color: #FF3366;
+  color: #fff;
+}
+
+.accordion-heading a {
+  color: #fff;
+}
+
+.dropdown-menu {
+  overflow-y: scroll;
+  max-width: none;
+  max-height: 220px;
+}
+
+ul#graph-target-list {
+  list-style: none;
+}

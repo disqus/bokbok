@@ -1,0 +1,13 @@
+Flask==0.8
+Flask-Actions==0.6.5
+Flask-Redis==0.2
+Jinja2==2.6
+Pygments==1.4
+Sphinx==1.1.2
+Werkzeug==0.8.1
+certifi==0.0.8
+chardet==1.0.1
+docutils==0.8.1
+redis==2.4.11
+requests==0.10.1
+wsgiref==0.1.2
