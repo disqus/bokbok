@@ -13,9 +13,7 @@ img#graphite-img {
 }
 
 .dropdown-menu {
-  overflow-y: scroll;
   max-width: none;
-  max-height: 220px;
 }
 
 ul#graph-target-list {
