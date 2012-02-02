@@ -3,9 +3,12 @@ $(function(){
     graphiteTargets = []
 
   function addTarget(target) {
-    graphiteTargets.push(target)
-    $('ul#graph-target-list').append('<li><a class="close">&times;</a><span>'+target+'</span></li>')
-    updateGraph(graphiteTargets, graphiteOptions)
+    if ($.inArray(target, graphiteTargets) == -1) {
+        graphiteTargets.push(target)
+        $('ul#graph-target-list').append('<li><a class="close">&times;</a><span>'+target+'</span></li>')
+        updateGraph(graphiteTargets, graphiteOptions)
+        $('input#metrics-select').val('')
+    }
   }
 
   function metricList(query) {

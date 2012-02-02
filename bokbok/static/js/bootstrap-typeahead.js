@@ -209,7 +209,7 @@
           var that = this
           delay(function(){
             that.lookup()
-          }, 1000)
+          }, 250)
       }
 
   }
