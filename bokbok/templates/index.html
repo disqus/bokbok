@@ -86,7 +86,7 @@
               </ul>
             </div>
             <div class="btn-group">
-              <button type="reset" class="btn">
+              <button type="reset" class="btn reset">
                 <i class="icon-remove"></i>
                 Reset
               </button>
@@ -184,7 +184,15 @@
                     </div>
                   </div>
                   <div class="row">
-                    <div class="span11 columns">
+                    <div class="span6 columns">
+                      <div class="control-group">
+                        <label class="control-label">Y-axis max</label>
+                        <div class="controls">
+                          <input class="span1" type="text" name="yMax" />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="span5 columns">
                       <div class="control-group">
                         <label class="control-label" for="option-toggles">Toggles</label>
                         <div class="controls">
@@ -216,9 +224,10 @@
     </div>
   </div>
 </div>
+
 <div class="modal hide fade" id="graph-modal">
   <div class="modal-header">
-    <a class="close" data-dismiss="modal">×</a>
+    <a class="close" data-dismiss="modal">&times;</a>
     <h3>Graph snapshot</h3>
   </div>
   <div class="modal-body">
@@ -228,7 +237,22 @@
     </p>
   </div>
   <div class="modal-footer">
-    <a class="btn" data-dismiss="modal">Close</a>
+    <a class="btn btn-primary" data-dismiss="modal">Close</a>
+  </div>
+</div>
+<div class="modal hide fade" id="graph-target-modal">
+  <div class="modal-header">
+    <a class="close" data-dismiss="modal">&times;</a>
+    <h3>Edit metric</h3>
+  </div>
+  <div class="modal-body">
+    <p align="center">
+      <input class="span6" id="graph-target"
+             type="text"></input>
+    </p>
+  </div>
+  <div class="modal-footer">
+    <a class="btn btn-primary update" data-dismiss="modal">Close</a>
   </div>
 </div>
 <script src="{{ url_for('.static', filename='js/bootstrap-collapse.js') }}"></script>
