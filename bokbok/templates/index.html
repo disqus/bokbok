@@ -21,10 +21,19 @@
     return(url)
   }
 
-  function updateGraph(graphiteTargets, options) {
+  function updateGraph(targets, options) {
     var opts = $.extend({}, {{ graphite_options|safe }}, options)
     $('#graphite-img').attr('src',
-      buildGraphiteUrl(graphiteTargets, opts))
+      buildGraphiteUrl(targets, opts))
+  }
+
+  function saveGraph(targets, options, callback) {
+    var opts = $.extend({}, {{ graphite_options|safe }}, options),
+      url = buildGraphiteUrl(targets, opts)
+
+    $.post('/graph/save', {url: url}, function(data){
+      callback(data.message)
+    })
   }
 </script>
 <div class="navbar">
@@ -53,12 +62,36 @@
     <div class="span12 columns">
       <form class="form-horizontal" id="graph-form">
         <div class="well">
-          <a class="btn btn-primary"><i class="icon-refresh
-                                               icon-white"></i>
-            Update graph</a>
-          <button type="reset"
-                  class="btn"><i class="icon-remove"></i>
-            Reset</button>
+          <div class="btn-toolbar" style="margin:0;">
+            <div class="btn-group">
+              <a class="btn btn-primary" href="#">Graph</a>
+              <a class="btn btn-primary dropdown-toggle"
+                 data-toggle="dropdown" href="#">
+                <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a id="graph-update" href="#">
+                    <i class="icon-refresh"></i>
+                    Update</a>
+                </li>
+                <li class="divider"></li>
+                <li><a id="graph-share" href="#">
+                    <i class="icon-share-alt"></i>
+                    Permalink</a>
+                </li>
+                <li><a id="graph-save" href="#">
+                    <i class="icon-camera"></i>
+                    Snapshot</a>
+                </li>
+              </ul>
+            </div>
+            <div class="btn-group">
+              <button type="reset" class="btn">
+                <i class="icon-remove"></i>
+                Reset
+              </button>
+            </div>
+          </div>
         </div>
         <div class="accordion" id="accordion2">
           <div class="accordion-group">
@@ -83,7 +116,7 @@
                   glass for help</p>
                 </div>
                 <div class="span11">
-                  <ul id="graph-target-list">
+                  <Ul id="graph-target-list">
                   </ul>
                 </div>
               </div>
@@ -151,7 +184,7 @@
                     </div>
                   </div>
                   <div class="row">
-                    <div class="span11">
+                    <div class="span11 columns">
                       <div class="control-group">
                         <label class="control-label" for="option-toggles">Toggles</label>
                         <div class="controls">
@@ -183,7 +216,24 @@
     </div>
   </div>
 </div>
+<div class="modal hide fade" id="graph-modal">
+  <div class="modal-header">
+    <a class="close" data-dismiss="modal">×</a>
+    <h3>Graph snapshot</h3>
+  </div>
+  <div class="modal-body">
+    <p align="center">
+      <input class="span6" id="graph-link"
+             type="text"></input>
+    </p>
+  </div>
+  <div class="modal-footer">
+    <a class="btn" data-dismiss="modal">Close</a>
+  </div>
+</div>
 <script src="{{ url_for('.static', filename='js/bootstrap-collapse.js') }}"></script>
 <script src="{{ url_for('.static', filename='js/bootstrap-typeahead.js') }}"></script>
 <script src="{{ url_for('.static', filename='js/bootstrap-tooltip.js') }}"></script>
 <script src="{{ url_for('.static', filename='js/bootstrap-popover.js') }}"></script>
+<script src="{{ url_for('.static', filename='js/bootstrap-dropdown.js') }}"></script>
+<script src="{{ url_for('.static', filename='js/bootstrap-modal.js') }}"></script>

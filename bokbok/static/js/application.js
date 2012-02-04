@@ -50,7 +50,7 @@ $(function(){
     }
   })
 
-  $('a.btn.btn-primary').click(function(e){
+  $('a#graph-update').click(function(e){
     e.preventDefault()
     $.each($('#graph-form').serializeArray(), function(i, field) {
       if (field.value.length > 0)
@@ -59,9 +59,19 @@ $(function(){
     updateGraph(graphiteTargets, graphiteOptions)
   })
 
-  $('i#search-help').popover({
-    content: 'Search via substring and select the metric from the dropdown, or ' +
-      'type a whole metric and press Enter to submit it.',
-    placement: 'top'
+  $('a#graph-save').click(function(e){
+    e.preventDefault()
+    saveGraph(graphiteTargets, graphiteOptions, function(graphId){
+      link = location.protocol + '//' + location.host + '/graph/view/' +
+        graphId
+      $('.modal-body>p>input').val(link)
+      $('#graph-modal').modal()
+    })
+  })
+    
+  $('i#search-help').tooltip({
+    title: 'Search via substring and select the metric from the ' +
+      'dropdown, or type a whole metric and press Enter to submit it.',
+    placement: 'right'
   })
 })
