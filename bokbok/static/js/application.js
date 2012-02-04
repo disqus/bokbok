@@ -5,20 +5,24 @@ $(function(){
   function addTarget(target) {
     if ($.inArray(target, graphiteTargets) == -1) {
         graphiteTargets.push(target)
-        $('ul#graph-target-list').append('<li><a class="close">&times;</a><span>'+target+'</span></li>')
+        $('ul#graph-target-list').append('<li><a class="close">&times;</a><span class="editable">'+target+'</span></li>')
         updateGraph(graphiteTargets, graphiteOptions)
+        $('ul#graph-target-list>li').each(function(){
+          if ($(this).find('span').text() === target) {
+            $(this).data('current', target)
+          }
+        })
         $('input#metrics-select').val('')
     }
   }
 
-  function updateTarget(old, nnew) {
-    pos = $.inArray(old, graphiteTargets)
+  function updateTarget(previous, current) {
+    pos = $.inArray(previous, graphiteTargets)
     if (pos > -1) {
-      graphiteTargets[pos] = nnew
+      graphiteTargets[pos] = current
       $('ul#graph-target-list>li').each(function(){
-        var selector = $(this).find('span')
-        if ($(selector).text() == old) {
-          $(selector).text(nnew)
+        if ($(this).data('current') === previous) {
+          $(this).data('current', current)
         }
       })
 
@@ -94,7 +98,7 @@ $(function(){
       $('#graph-modal').find('input').select()
     })
   }).live('mouseenter', function(){
-    $(this).tooltip('show')
+      $(this).tooltip('show')
   }).live('mouseleave', function(){
     $(this).tooltip('hide')
   })
@@ -125,15 +129,17 @@ $(function(){
     placement: 'right'
   })
 
-  $('ul#graph-target-list').find('span').live('click', function(e){
-    $('#graph-target-modal').find('input#graph-target').attr('data-target', $(this).text())
-    $('#graph-target-modal').find('input#graph-target').val($(this).text())
-    $('#graph-target-modal').modal()
-  })
-
-  $('#graph-target-modal').find('a.update').click(function(e){
-    var old = $('#graph-target-modal').find('input#graph-target').attr('data-target'),
-      nnew = $('#graph-target-modal').find('input#graph-target').val()
-     updateTarget(old, nnew)
+  $('#graph-target-list').find('.editable').live('mouseover', function(){
+    if (!$(this).data('init')) {
+      $(this).data('init', true)
+      $(this).editable(function(current, settings){
+        var previous = $(this).parent().data('current')
+        updateTarget(previous, current)
+        return(current)
+      }, {
+        indicator: '',
+        type: 'text'
+      })
+    }
   })
 })

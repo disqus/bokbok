@@ -160,7 +160,7 @@
                         <label class="control-label">Vertical title</label>
                         <div class="controls">
                           <input class="span2" type="text" name="vtitle"
-                                 placeholder="per second" />
+                                 placeholder="unset" />
                         </div>
                       </div>
                       <div class="control-group">
@@ -188,7 +188,8 @@
                       <div class="control-group">
                         <label class="control-label">Y-axis max</label>
                         <div class="controls">
-                          <input class="span1" type="text" name="yMax" />
+                          <input class="span1" type="text" name="yMax"
+                                 placeholder="unset" />
                         </div>
                       </div>
                     </div>
@@ -261,3 +262,4 @@
 <script src="{{ url_for('.static', filename='js/bootstrap-popover.js') }}"></script>
 <script src="{{ url_for('.static', filename='js/bootstrap-dropdown.js') }}"></script>
 <script src="{{ url_for('.static', filename='js/bootstrap-modal.js') }}"></script>
+<script src="{{ url_for('.static', filename='js/jquery.jeditable.mini.js') }}"></script>
