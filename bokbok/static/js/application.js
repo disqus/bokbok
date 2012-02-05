@@ -1,12 +1,41 @@
-$(function(){
-  var graphiteOptions = {},
-    graphiteTargets = []
+  function Graph(host, options) {
+    this.graphiteHost = host
+    this.options = options
+    this.targets = []
 
+    var self = this
+
+    this.url = function() {
+      var url = 'http://'+self.graphiteHost+'/render?'
+
+      for (var i = 0; i < self.targets.length; i++)
+        url += '&target=' + self.targets[i]
+
+      for (var k in self.options) {
+        if (self.options.hasOwnProperty(k))
+          url += '&' + k + '=' + encodeURIComponent(self.options[k])
+      }
+
+      return(url)
+    }
+
+    this.update = function() {
+      $('#graphite-img').attr('src', self.url())
+    }
+
+    this.save = function(callback) {
+      $.post('/graph/save', {url: self.url()}, function(data){
+        callback(data.message)
+      })
+    }
+  }
+
+$(function(){
   function addTarget(target) {
-    if ($.inArray(target, graphiteTargets) == -1) {
-        graphiteTargets.push(target)
+    if ($.inArray(target, graph.targets) == -1) {
+        graph.targets.push(target)
         $('ul#graph-target-list').append('<li><a class="close">&times;</a><span class="editable">'+target+'</span></li>')
-        updateGraph(graphiteTargets, graphiteOptions)
+        graph.update()
         $('ul#graph-target-list>li').each(function(){
           if ($(this).find('span').text() === target) {
             $(this).data('current', target)
@@ -17,16 +46,16 @@ $(function(){
   }
 
   function updateTarget(previous, current) {
-    pos = $.inArray(previous, graphiteTargets)
+    pos = $.inArray(previous, graph.targets)
     if (pos > -1) {
-      graphiteTargets[pos] = current
+      graph.targets[pos] = current
       $('ul#graph-target-list>li').each(function(){
         if ($(this).data('current') === previous) {
           $(this).data('current', current)
         }
       })
 
-      updateGraph(graphiteTargets, graphiteOptions)
+      graph.update()
     }
   }
 
@@ -64,11 +93,11 @@ $(function(){
       idx
 
     metric = parent.children('span').text()
-    var idx = graphiteTargets.indexOf(metric)
+    var idx = graph.targets.indexOf(metric)
     if (idx != -1) {
-      graphiteTargets.splice(idx, 1)
+      graph.targets.splice(idx, 1)
       parent.remove()
-      updateGraph(graphiteTargets, graphiteOptions)
+      graph.update()
     }
   })
 
@@ -76,9 +105,9 @@ $(function(){
     e.preventDefault()
     $.each($('#graph-form').serializeArray(), function(i, field) {
       if (field.value.length > 0)
-        graphiteOptions[field.name] = field.value
+        graph.options[field.name] = field.value
     })
-    updateGraph(graphiteTargets, graphiteOptions)
+    graph.update()
   }).live('mouseenter', function(){
     $(this).tooltip('show')
   }).live('mouseleave', function(){
@@ -93,7 +122,7 @@ $(function(){
 
   $('a#graph-save').click(function(e){
     e.preventDefault()
-    saveGraph(graphiteTargets, graphiteOptions, function(graphId){
+    graph.save(function(graphId){
       link = location.protocol + '//' + location.host + '/graph/view/' +
         graphId
       $('#graph-modal').find('input').val(link)

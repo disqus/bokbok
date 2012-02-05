@@ -5,36 +5,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script src="{{ url_for('.static', filename='js/application.js') }}"></script>
 <script>
-  function buildGraphiteUrl(targets, options) {
-    var url = 'http://{{ graphite_host }}/render?'
-
-    for (var i = 0; i < targets.length; i++) {
-      url += '&target=' + targets[i]
-    }
-
-    for (var k in options) {
-      if (options.hasOwnProperty(k)) {
-        url += '&' + k + '=' + options[k]
-      }
-    }
-
-    return(url)
-  }
-
-  function updateGraph(targets, options) {
-    var opts = $.extend({}, {{ graphite_options|safe }}, options)
-    $('#graphite-img').attr('src',
-      buildGraphiteUrl(targets, opts))
-  }
-
-  function saveGraph(targets, options, callback) {
-    var opts = $.extend({}, {{ graphite_options|safe }}, options),
-      url = buildGraphiteUrl(targets, opts)
-
-    $.post('/graph/save', {url: url}, function(data){
-      callback(data.message)
-    })
-  }
+  graph = new Graph('{{ graphite_host }}', {{ graphite_options|safe }})
 </script>
 <div class="navbar">
   <div class="navbar-inner">
