@@ -122,7 +122,7 @@ $(function(){
   })
 
   $('button.reset').tooltip({
-    title: 'Reset the form below',
+    title: 'Reset the options below',
     placement: 'right'
   })
 
