@@ -53,6 +53,9 @@ $(function(){
      if (code == 13) {
        addTarget($(this).val())
      }
+  }).click(function(){
+    $('i#search-help').popover('hide')
+    $.cookie('visited', true)
   })
 
   $('li>a.close').live('click', function(){
@@ -123,10 +126,12 @@ $(function(){
     placement: 'right'
   })
 
-  $('i#search-help').tooltip({
-    title: 'Search via substring and select the metric from the ' +
+  $('i#search-help').popover({
+    title: 'Hello!',
+    content: 'Search via substring and select the metric from the ' +
       'dropdown, or type a whole metric and press Enter to submit.',
-    placement: 'right'
+    placement: 'right',
+    trigger: 'manual'
   })
 
   $('#graph-target-list').find('.editable').live('mouseover', function(){
@@ -142,4 +147,11 @@ $(function(){
       })
     }
   })
+
+  if (!$.cookie('visited')) {
+    setTimeout(function(){
+      $('i#search-help').popover('show')
+      },
+   50)
+  }
 })

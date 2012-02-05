@@ -50,9 +50,7 @@
 <div class="container">
   <div class="row">
     <div class="span12 columns">
-      <img id="graphite-img" src="http://placehold.it/{{
-      graphite_options['width'] }}x{{ graphite_options['height'] }}/{{
-      graphite_options['bgcolor'] }}/ffffff&text=your+graph+here" />
+      <img id="graphite-img" src="/static/img/graph.png" />
     </div>
   </div>
   <div class="row">
@@ -112,8 +110,6 @@
                       <i class="icon-search" id="search-help"></i>
                     </span>
                   </div>
-                  <p class="help-block">Mouse over the magnifying
-                  glass for help</p>
                 </div>
                 <div class="span11">
                   <Ul id="graph-target-list">
@@ -262,4 +258,5 @@
 <script src="{{ url_for('.static', filename='js/bootstrap-popover.js') }}"></script>
 <script src="{{ url_for('.static', filename='js/bootstrap-dropdown.js') }}"></script>
 <script src="{{ url_for('.static', filename='js/bootstrap-modal.js') }}"></script>
+<script src="{{ url_for('.static', filename='js/jquery.cookie.js') }}"></script>
 <script src="{{ url_for('.static', filename='js/jquery.jeditable.mini.js') }}"></script>
