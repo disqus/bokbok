@@ -12,27 +12,56 @@ def index():
                            graphite_host=graphite_host,
                            graphite_options=graphite_options)
 
-@frontend.route('/graph/view/<_id>')
-def load(_id):
-    graph = Graph()
-    image = graph.load(_id)
+@frontend.route('/graph', methods=['POST'])
+def save_config():
+    config = request.form.get('config', None)
+    if not config:
+        abort(400)
 
-    if image:
-        return Response(image, mimetype='image/png')
-    else:
+    graph = Graph()
+
+    try:
+        graph.config = config
+    except AttributeError:
         abort(500)
 
-@frontend.route('/graph/save', methods=['POST'])
-def save():
+    if not graph.id:
+        abort(500)
+
+    return jsonify(message=graph.id)
+
+@frontend.route('/graph/<_id>')
+def load_config(_id):
+    graph = Graph()
+    graph.id = _id
+
+    try:
+        return jsonify(message=graph.config)
+    except AttributeError:
+        abort(500)
+
+@frontend.route('/graph/snapshot', methods=['POST'])
+def save_snapshot():
     url = request.form.get('url', None)
     if not url:
         abort(400)
 
     graph = Graph()
-    _id = graph.save(url)
+    _id = graph.snapshot(url)
     if not _id:
         abort(500)
     return jsonify(message=_id)
+
+@frontend.route('/graph/snapshot/<_id>')
+def load_blob(_id):
+    graph = Graph()
+    graph.id = _id
+    image = graph.blob
+
+    if image:
+        return Response(image, mimetype='image/png')
+    else:
+        abort(500)
 
 @frontend.route('/metrics.json')
 def metrics():

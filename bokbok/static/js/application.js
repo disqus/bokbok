@@ -5,6 +5,27 @@
 
     var self = this
 
+    this.permalink = function(callback) {
+      var config = {
+        targets: self.targets,
+        options: self.options
+      }
+
+      $.post('/graph', {config: JSON.stringify(config)}, function(data) {
+        callback(data.message)
+      })
+    }
+
+    this.snapshot = function(callback) {
+      $.post('/graph/snapshot', {url: self.url()}, function(data){
+        callback(data.message)
+      })
+    }
+
+    this.update = function() {
+      $('#graphite-img').attr('src', self.url())
+    }
+
     this.url = function() {
       var url = 'http://'+self.graphiteHost+'/render?'
 
@@ -17,16 +38,6 @@
       }
 
       return(url)
-    }
-
-    this.update = function() {
-      $('#graphite-img').attr('src', self.url())
-    }
-
-    this.save = function(callback) {
-      $.post('/graph/save', {url: self.url()}, function(data){
-        callback(data.message)
-      })
     }
   }
 
@@ -114,16 +125,25 @@ $(function(){
     $(this).tooltip('hide')
   })
 
-  $('a#graph-share').live('mouseenter', function(){
+  $('a#graph-permalink').click(function(e) {
+    e.preventDefault()
+    graph.permalink(function(graphId) {
+      link = location.protocol + '//' + location.host + '/graph/' +
+        graphId
+      $('#graph-modal').find('input').val(link)
+      $('#graph-modal').modal()
+      $('#graph-modal').find('input').select()
+    })
+  }).live('mouseenter', function(){
     $(this).tooltip('show')
   }).live('mouseleave', function(){
     $(this).tooltip('hide')
   })
 
-  $('a#graph-save').click(function(e){
+  $('a#graph-snapshot').click(function(e){
     e.preventDefault()
-    graph.save(function(graphId){
-      link = location.protocol + '//' + location.host + '/graph/view/' +
+    graph.snapshot(function(graphId){
+      link = location.protocol + '//' + location.host + '/graph/snapshot/' +
         graphId
       $('#graph-modal').find('input').val(link)
       $('#graph-modal').modal()
@@ -140,12 +160,12 @@ $(function(){
     placement: 'right'
   })
 
-  $('a#graph-share').tooltip({
+  $('a#graph-permalink').tooltip({
     title: 'Share this graph.',
     placement: 'right'
   })
 
-  $('a#graph-save').tooltip({
+  $('a#graph-snapshot').tooltip({
     title: 'Take a snapshot of this graph image.',
     placement: 'right'
   })
