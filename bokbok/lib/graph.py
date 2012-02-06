@@ -1,21 +1,27 @@
 import requests
 from base64 import b64decode, b64encode
+from boto.s3.connection import S3Connection
+from boto.s3.key import Key
 from flask import g
 from json import dumps, loads
 from time import time
 from uuid import uuid4
 
-from bokbok import graphite_host
+from bokbok import aws_access_key_id, aws_secret_access_key, graphite_host
 
 class Graph(object):
 
     def __init__(self):
         self._blob_redis_key = 'bokbok:graphs:blob'
         self._config_redis_key = 'bokbok:graphs:config'
-
+        self._bucket_name = 'bokbok_graphs_blob'
         self._blob = None
         self._config = None
         self._id = None
+
+        self._s3_conn = S3Connection(aws_access_key_id,
+                                     aws_secret_access_key)
+        self.s3_bucket = self._s3_conn.create_bucket(self._bucket_name)
 
     @property
     def id(self):
@@ -57,8 +63,13 @@ class Graph(object):
 
         try:
             if not self._blob:
-                self._blob = b64decode(loads(g.redis.hget(self._blob_redis_key,
-                                                          self.id))['image'])
+                k = Key(self.s3_bucket)
+                k.key = self.id
+                self._blob_metadata = loads(g.redis.hget(self._blob_redis_key, self.id))
+                if not self._blob_metadata:
+                    raise AttributeError
+
+                self._blob = b64decode(k.get_contents_as_string())
             return self._blob
         except TypeError:
             raise AttributeError
@@ -67,9 +78,12 @@ class Graph(object):
     def blob(self, data):
         self.id = uuid4().hex
         try:
-            self._blob = dumps(dict(id=self.id, creatd_at=time(),
-                                    image=b64encode(data)))
-            g.redis.hset(self._blob_redis_key, self.id, self._blob)
+            self._blob_metadata = dumps(dict(s3id=self.id, created_at=time()))
+            self._blob = b64encode(data)
+            k = Key(self.s3_bucket)
+            k.key = self.id
+            k.set_contents_from_string(self._blob)
+            g.redis.hset(self._blob_redis_key, self.id, self._blob_metadata)
         except TypeError:
             raise AttributeError
 
