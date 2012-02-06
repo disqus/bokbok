@@ -1,4 +1,5 @@
 from flask import Module, Response, abort, g, jsonify, render_template, request
+from json import dumps
 
 from bokbok import graphite_host, graphite_options
 from bokbok.lib.graph import Graph
@@ -8,9 +9,10 @@ frontend = Module(__name__)
 
 @frontend.route('/')
 def index():
+    graph_config = dict(options=graphite_options, targets=[])
     return render_template('index.html',
                            graphite_host=graphite_host,
-                           graphite_options=graphite_options)
+                           graph=dumps(graph_config))
 
 @frontend.route('/graph', methods=['POST'])
 def save_config():
@@ -30,15 +32,32 @@ def save_config():
 
     return jsonify(message=graph.id)
 
-@frontend.route('/graph/<_id>')
-def load_config(_id):
+@frontend.route('/graph/<pth>')
+def load_config(pth):
+    if '.' in pth:
+        (_id, ext) = pth.split('.')
+    else:
+        _id = pth
+        ext = None
+
     graph = Graph()
     graph.id = _id
 
     try:
-        return jsonify(message=graph.config)
+        config = graph.config
     except AttributeError:
         abort(500)
+
+    if ext == 'png':
+        image = graph.graph()
+        if image:
+            return Response(image, mimetype='image/png')
+        else:
+            abort(404)
+
+    return render_template('index.html',
+                           graphite_host=graphite_host,
+                           graph=dumps(config))
 
 @frontend.route('/graph/snapshot', methods=['POST'])
 def save_snapshot():

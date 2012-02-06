@@ -5,7 +5,21 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script src="{{ url_for('.static', filename='js/application.js') }}"></script>
 <script>
-  graph = new Graph('{{ graphite_host }}', {{ graphite_options|safe }})
+$(function(){
+  var config = JSON.parse('{{graph|safe}}')
+  graph = new Graph('{{ graphite_host }}', config)
+
+  for(var x = 0; x < config.targets.length; x++) {
+    var target = config.targets[x]
+    $('ul#graph-target-list').append('<li><a class="close">&times;</a><span class="editable">'+target+'</span></li>')
+    graph.update()
+    $('ul#graph-target-list>li').each(function(){
+      if ($(this).find('span').text() === target) {
+        $(this).data('current', target)
+      }
+    })
+  }
+})
 </script>
 <div class="navbar">
   <div class="navbar-inner">

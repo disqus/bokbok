@@ -5,6 +5,8 @@ from json import dumps, loads
 from time import time
 from uuid import uuid4
 
+from bokbok import graphite_host
+
 class Graph(object):
 
     def __init__(self):
@@ -78,6 +80,19 @@ class Graph(object):
                 self.blob = r.content
                 return self.id
             except AttributeError:
+                return None
+        else:
+            return None
+
+    def graph(self):
+        if self.config:
+            url = 'http://%s/render?%s' % (graphite_host,
+                   '&'.join(['target=%s' % t for t in self.config['targets']]))
+
+            r = requests.get(url, params=self.config['options'])
+            if r.status_code == requests.codes.ok:
+                return r.content
+            else:
                 return None
         else:
             return None

@@ -1,6 +1,5 @@
 import os
 import flaskext.redis
-
 from flask import Flask, g
 
 app = Flask(__name__)

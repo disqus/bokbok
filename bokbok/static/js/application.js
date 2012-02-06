@@ -1,17 +1,11 @@
-  function Graph(host, options) {
+  function Graph(host, config) {
     this.graphiteHost = host
-    this.options = options
-    this.targets = []
+    this.config = config
 
     var self = this
 
     this.permalink = function(callback) {
-      var config = {
-        targets: self.targets,
-        options: self.options
-      }
-
-      $.post('/graph', {config: JSON.stringify(config)}, function(data) {
+      $.post('/graph', {config: JSON.stringify(self.config)}, function(data) {
         callback(data.message)
       })
     }
@@ -29,12 +23,12 @@
     this.url = function() {
       var url = 'http://'+self.graphiteHost+'/render?'
 
-      for (var i = 0; i < self.targets.length; i++)
-        url += '&target=' + self.targets[i]
+      for (var i = 0; i < self.config.targets.length; i++)
+        url += '&target=' + self.config.targets[i]
 
-      for (var k in self.options) {
-        if (self.options.hasOwnProperty(k))
-          url += '&' + k + '=' + encodeURIComponent(self.options[k])
+      for (var k in self.config.options) {
+        if (self.config.options.hasOwnProperty(k))
+          url += '&' + k + '=' + encodeURIComponent(self.config.options[k])
       }
 
       return(url)
@@ -43,8 +37,8 @@
 
 $(function(){
   function addTarget(target) {
-    if ($.inArray(target, graph.targets) == -1) {
-        graph.targets.push(target)
+    if ($.inArray(target, graph.config.targets) == -1) {
+        graph.config.targets.push(target)
         $('ul#graph-target-list').append('<li><a class="close">&times;</a><span class="editable">'+target+'</span></li>')
         graph.update()
         $('ul#graph-target-list>li').each(function(){
@@ -57,9 +51,9 @@ $(function(){
   }
 
   function updateTarget(previous, current) {
-    pos = $.inArray(previous, graph.targets)
+    pos = $.inArray(previous, graph.config.targets)
     if (pos > -1) {
-      graph.targets[pos] = current
+      graph.config.targets[pos] = current
       $('ul#graph-target-list>li').each(function(){
         if ($(this).data('current') === previous) {
           $(this).data('current', current)
@@ -104,9 +98,9 @@ $(function(){
       idx
 
     metric = parent.children('span').text()
-    var idx = graph.targets.indexOf(metric)
+    var idx = graph.config.targets.indexOf(metric)
     if (idx != -1) {
-      graph.targets.splice(idx, 1)
+      graph.config.targets.splice(idx, 1)
       parent.remove()
       graph.update()
     }
@@ -116,7 +110,7 @@ $(function(){
     e.preventDefault()
     $.each($('#graph-form').serializeArray(), function(i, field) {
       if (field.value.length > 0)
-        graph.options[field.name] = field.value
+        graph.config.options[field.name] = field.value
     })
     graph.update()
   }).live('mouseenter', function(){
