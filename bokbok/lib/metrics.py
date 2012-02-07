@@ -1,9 +1,3 @@
-from werkzeug.contrib.cache import SimpleCache
-
-from bokbok import graphite_host
-
-cache = SimpleCache()
-CACHE_TIMEOUT = 86400
 
 class Metrics(object):
 
@@ -12,10 +6,15 @@ class Metrics(object):
         import requests
         from redis import Redis
 
+        from bokbok import carbon_shards
+
         redis = Redis()
-        r = requests.get('http://%s/metrics/index.json' % graphite_host)
-        for line in json.loads(r.text):
-            redis.sadd('bokbok:metrics_cache', line.lstrip('.'))
+
+        for shard in carbon_shards:
+            r = requests.get('http://%s/metrics/index.json' % shard)
+            _metrics = json.loads(r.text)
+            for line in _metrics:
+                redis.sadd('bokbok:metrics_cache', line.lstrip('.'))
 
     def index(self, data):
         index = dict()
@@ -25,7 +24,10 @@ class Metrics(object):
 
     def find(self, query, index):
         from flask import g
+        from werkzeug.contrib.cache import SimpleCache
 
+        cache = SimpleCache()
+        CACHE_TIMEOUT = 86400
         index = cache.get('bokbok:metrics_index')
 
         if not cache.get('bokbok:metrics_list'):
