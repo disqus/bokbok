@@ -64,23 +64,17 @@ $(function(){
     }
   }
 
-  function metricList(query) {
-    var metricList = []
-
-    jQuery.ajaxSetup({async:false});
-    $.getJSON('/metrics.json?query=' + query, function(data) {
-      metricList = data.message
-    })
-    jQuery.ajaxSetup({async:true});
-    return(metricList)
-  }
-
   $('.accordion').collapse()
 
   $('input#metrics-select').typeahead({
-    source: metricList,
-    onSelect: function(data){
+    source: function(query, typeahead) {
+      $.getJSON('/metrics.json?query=' + query, function(data) {
+        return(typeahead(data.message))
+      });
+    },
+    updater: function(data){
       addTarget(data)
+      //return(data)
     }
   }).bind('keydown', function(e){
      var code = e.keyCode || e.which
