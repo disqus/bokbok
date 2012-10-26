@@ -3,6 +3,8 @@ bokbok
 
 An experimental graphite-web alternative.
 
+!(Screenshot)[https://raw.github.com/ohlol/bokbok/master/bokbok.png]
+
 Prerequisites
 =============
 
