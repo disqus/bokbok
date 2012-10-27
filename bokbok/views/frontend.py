@@ -32,7 +32,6 @@ def index():
 
 @frontend.route('/graph', methods=['POST'])
 def save_config():
-    import pdb; pdb.set_trace()
     config = request.form.get('config', None)
     if not config:
         abort(400)
