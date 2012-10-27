@@ -29,6 +29,9 @@ graphite_options = app.config.get('GRAPHITE_OPTIONS', {})
 aws_access_key_id = os.environ.get('AWS_ACCESS_KEY_ID',
                                    app.config.get('AWS_ACCESS_KEY_ID',
                                                   None))
+aws_bucket_name = os.environ.get('AWS_BUCKET_NAME',
+                                 app.config.get('AWS_BUCKET_NAME',
+                                                None))
 aws_secret_access_key = os.environ.get('AWS_SECRET_ACCESS_KEY',
                                    app.config.get('AWS_SECRET_ACCESS_KEY',
                                                   None))

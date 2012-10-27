@@ -23,21 +23,20 @@ from json import dumps, loads
 from time import time
 from uuid import uuid4
 
-from bokbok import aws_access_key_id, aws_secret_access_key, graphite_host
+from bokbok import aws_access_key_id, aws_bucket_name, aws_secret_access_key, graphite_host
 
 class Graph(object):
 
     def __init__(self):
         self._blob_redis_key = 'bokbok:graphs:blob'
         self._config_redis_key = 'bokbok:graphs:config'
-        self._bucket_name = 'bokbok_graphs_blob'
         self._blob = None
         self._config = None
         self._id = None
 
         self._s3_conn = S3Connection(aws_access_key_id,
                                      aws_secret_access_key)
-        self.s3_bucket = self._s3_conn.create_bucket(self._bucket_name)
+        self.s3_bucket = self._s3_conn.create_bucket(aws_bucket_name)
 
     @property
     def id(self):
